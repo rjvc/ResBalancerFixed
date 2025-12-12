@@ -95,7 +95,7 @@ javascript:
                 top: 40px; 
                 width: 300px;
                 max-width: 90vw; /* Fit on screen */
-                max-height: 80vh;
+                /* max-height removed to allow .content class to control collapsing state */
                 overflow-y: auto; 
                 z-index: 10000;
                 background-color: #32353b;
@@ -377,8 +377,12 @@ javascript:
                 $(".collapsible").on("click", function() {
                     this.classList.toggle("active");
                     var content = this.nextElementSibling;
-                    if (content.style.maxHeight) content.style.maxHeight = null;
-                    else content.style.maxHeight = "500px";
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                    } else {
+                        // For mobile menu, we want a decent height, 80vh ensures it doesn't overflow screen vertically
+                        content.style.maxHeight = "80vh"; 
+                    }
                 });
 
                 // Calculate Transfers (Logic adapted from original)
