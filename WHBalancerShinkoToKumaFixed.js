@@ -1,8 +1,7 @@
-javascript:
 /*jshint esversion: 6 */
 //script by Sophie "Shinko to Kuma". Skype: live:sophiekitsune discord: Sophie#2418 website: https://shinko-to-kuma.my-free.website/
 var testPage;
-var is_mobile = !!navigator.userAgent.match(/iphone|android|blackberry/ig) || false;
+var is_mobile = window.matchMedia("(max-width: 768px)").matches;
 var warehouseCapacity = [];
 var allWoodTotals = [];
 var allClayTotals = [];
@@ -25,9 +24,6 @@ var links = [];
 var cleanLinks = [];
 var stillShortage = [];
 var stillExcess = [];
-
-
-
 
 function init() {
     warehouseCapacity = [];
@@ -71,7 +67,6 @@ function cleanup() {
     links = [];
     cleanLinks = [];
 }
-
 
 //base language if not on a particular server = English
 var langShinko = [
@@ -270,7 +265,7 @@ if (game_data.locale == "hu_HU") {
     ];
 }
 //.br
-if (game_data.locale == "pt_BR") {
+if (game_data.locale == "pt_BR" || game_data.locale == "pt_PT") {
     langShinko = [
         "Balanceador de recursos",
         "Origem",
@@ -291,6 +286,7 @@ if (game_data.locale == "pt_BR") {
         "Sistema"
     ];
 }
+
 //colors for UI
 if (typeof colors == 'undefined') {
     cssClassesSophie = `
@@ -380,12 +376,15 @@ color: white;
         position: fixed;
         top: 50px;
         right: 10px;
-        z-index: 99999;
+        z-index: 99999999;
         max-width: 90vw;
         max-height: 90vh;
         overflow-y: auto;
         border-radius: 4px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        background-color: #36393f;
+        display: block !important;
+        visibility: visible !important;
     }
     
     #sophieFloatingContainer #tableSend {
@@ -905,10 +904,27 @@ throw new Error("Something went badly wrong!");
 }*/
 
 //adding UI classes to page - use floating container for mobile/desktop compatibility
-if ($("#sophieFloatingContainer").length === 0) {
-    $("body").append(`<div id="sophieFloatingContainer"></div>`);
+function initializeFloatingContainer() {
+    if ($("#sophieFloatingContainer").length === 0) {
+        // Try multiple selectors for different contexts (desktop, mobile, app wrappers)
+        var container = $("body");
+        if (container.length === 0) {
+            container = $("html");
+        }
+        if (container.length === 0) {
+            container = $(document);
+        }
+        container.append(`<div id="sophieFloatingContainer"></div>`);
+    }
+    $("#sophieFloatingContainer").prepend(cssClassesSophie);
 }
-$("#sophieFloatingContainer").prepend(cssClassesSophie);
+
+// Wait for DOM to be ready
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeFloatingContainer);
+} else {
+    initializeFloatingContainer();
+}
 
 //setting base settings if no player defined ones are present
 if (localStorage.getItem("settingsWHBalancerSophie") != null) {
